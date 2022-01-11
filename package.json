@@ -1,0 +1,27 @@
+{
+  "name": "spotify-top-collector",
+  "version": "1.0.0",
+  "description": "Collect any top/first song in playlist into another playlist.",
+  "main": "dist/app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/voruti/SpotifyTopCollector.git"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "watch": "tsc -b -w",
+    "clean": "tsc -b --clean"
+  },
+  "author": "voruti",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/voruti/SpotifyTopCollector/issues"
+  },
+  "homepage": "https://github.com/voruti/SpotifyTopCollector#readme",
+  "dependencies": {
+    "@types/node": "^15.0.2",
+    "@types/spotify-web-api-node": "^5.0.5",
+    "spotify-web-api-node": "^5.0.2",
+    "typescript": "^4.2.4"
+  }
+}

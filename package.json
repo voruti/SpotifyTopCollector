@@ -1,7 +1,7 @@
 {
   "name": "spotify-top-collector",
   "version": "1.0.0",
-  "description": "Collect any top/first song in playlist into another playlist.",
+  "description": "Collect any top/first track in playlist into another playlist.",
   "main": "dist/app.js",
   "repository": {
     "type": "git",

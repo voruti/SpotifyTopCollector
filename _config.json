@@ -1,5 +1,6 @@
 {
   "clientId": "yourclientid",
   "clientSecret": "yourclientsecret",
-  "refreshToken": "the_generated_refresh-token"
+  "refreshToken": "the_generated_refresh-token",
+  "sourcePlaylists": ["playlistid1", "playlistid2"]
 }

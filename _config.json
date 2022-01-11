@@ -1,0 +1,5 @@
+{
+  "clientId": "yourclientid",
+  "clientSecret": "yourclientsecret",
+  "refreshToken": "the_generated_refresh-token"
+}

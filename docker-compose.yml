@@ -1,0 +1,6 @@
+version: "3"
+services:
+  spotifytopcollector:
+    build: .
+    volumes:
+      - "./config.json:/home/node/app/config.json:ro"

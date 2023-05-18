@@ -9,7 +9,7 @@ let spotifyApi = new SpotifyWebApi({
     redirectUri: 'http://localhost:8888/callback'
 });
 
-const authUrl = spotifyApi.createAuthorizeURL(['playlist-modify-private', 'playlist-read-private'], 'this-is-the-state');
+const authUrl = spotifyApi.createAuthorizeURL(['playlist-modify-public', 'playlist-modify-private', 'playlist-read-private'], 'this-is-the-state');
 
 spotifyApi = new SpotifyWebApi({
     clientId: config.clientId,

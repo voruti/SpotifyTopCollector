@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM node:19 as builder
+FROM node:20 as builder
 
 WORKDIR /home/node/app
 
@@ -10,7 +10,7 @@ RUN npm ci && \
     npm run build
 
 
-FROM node:19-alpine
+FROM node:20-alpine
 
 WORKDIR /home/node/app
 

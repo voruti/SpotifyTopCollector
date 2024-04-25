@@ -18,6 +18,6 @@ WORKDIR /home/node/app
 COPY --chown=node:node ./package*.json ./
 COPY --chown=node:node --from=builder /home/node/app/dist/*.js ./
 
-RUN npm ci --production
+RUN npm ci --omit=dev
 
 CMD [ "node", "app.js" ]

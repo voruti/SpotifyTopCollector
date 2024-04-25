@@ -12,14 +12,12 @@ RUN npm ci && \
 
 FROM node:20-alpine
 
+USER node
 WORKDIR /home/node/app
 
-COPY ./package*.json ./
-COPY --from=builder /home/node/app/dist/*.js ./
+COPY --chown=node:node ./package*.json ./
+COPY --chown=node:node --from=builder /home/node/app/dist/*.js ./
 
-RUN chown -R node:node .
-USER node
-
-RUN npm ci --only=production
+RUN npm ci --production
 
 CMD [ "node", "app.js" ]

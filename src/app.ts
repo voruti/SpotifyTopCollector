@@ -81,7 +81,7 @@ function saveFirstOfPlaylist(sourcePlaylistId: string): Promise<void> {
         return track.uri;
       }),
   ]).then(async ([playlistName, firstTrackUri]) => {
-    let targetPlaylistId;
+    let targetPlaylistId: string;
 
     pagination: for (
       let offset: number, dataTotal: number;

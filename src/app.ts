@@ -103,16 +103,12 @@ function saveFirstOfPlaylist(sourcePlaylistId: string): Promise<void> {
 
     if (!targetPlaylistId) {
       console.log("No target playlist found, creating one:");
-      const data = await sdk.playlists.createPlaylist(
-        (
-          await sdk.currentUser.profile()
-        ).id,
-        {
-          name: `Top: ${results[0]}`,
-          description: `Top of ${results[0]} (Marker, don't remove)`,
-          public: false,
-        }
-      );
+      const user = await sdk.currentUser.profile();
+      const data = await sdk.playlists.createPlaylist(user.id, {
+        name: `Top: ${results[0]}`,
+        description: `Top of ${results[0]} (Marker, don't remove)`,
+        public: false,
+      });
       console.log(`Created new private playlist with id ${data.id}`);
       targetPlaylistId = data.id;
     }

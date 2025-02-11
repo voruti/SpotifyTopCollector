@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/voruti/SpotifyTopCollector#readme",
   "dependencies": {
+    "@spotify/web-api-ts-sdk": "1.2.0",
     "spotify-web-api-node": "^5.0.2"
   },
   "devDependencies": {

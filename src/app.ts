@@ -80,7 +80,7 @@ function saveFirstOfPlaylist(sourcePlaylistId: string): Promise<void> {
         console.log(`First track is "${track.name}"`);
         return track.uri;
       }),
-  ]).then(async (results) => {
+  ]).then(async ([playlistName, firstTrackUri]) => {
     let targetPlaylistId;
 
     pagination: for (
@@ -90,7 +90,7 @@ function saveFirstOfPlaylist(sourcePlaylistId: string): Promise<void> {
     ) {
       const data = await sdk.currentUser.playlists.playlists(undefined, offset);
       for (const item of data.items) {
-        if (item.description.includes(`Top of ${results[0]}`)) {
+        if (item.description.includes(`Top of ${playlistName}`)) {
           console.log(`Found target playlist with name "${item.name}"`);
           targetPlaylistId = item.id;
           break pagination;
@@ -105,8 +105,8 @@ function saveFirstOfPlaylist(sourcePlaylistId: string): Promise<void> {
       console.log("No target playlist found, creating one:");
       const user = await sdk.currentUser.profile();
       const data = await sdk.playlists.createPlaylist(user.id, {
-        name: `Top: ${results[0]}`,
-        description: `Top of ${results[0]} (Marker, don't remove)`,
+        name: `Top: ${playlistName}`,
+        description: `Top of ${playlistName} (Marker, don't remove)`,
         public: false,
       });
       console.log(`Created new private playlist with id ${data.id}`);
@@ -114,7 +114,7 @@ function saveFirstOfPlaylist(sourcePlaylistId: string): Promise<void> {
     }
 
     if (targetPlaylistId) {
-      await addTrackToPlaylist(targetPlaylistId, results[1]);
+      await addTrackToPlaylist(targetPlaylistId, firstTrackUri);
     } else {
       console.warn("No target playlist found!");
     }

@@ -74,7 +74,7 @@ function saveFirstOfPlaylist(sourcePlaylistId: string): Promise<void> {
       return name;
     }),
     sdk.playlists
-      .getPlaylistItems(sourcePlaylistId, undefined,undefined, 1 )
+      .getPlaylistItems(sourcePlaylistId, undefined, undefined, 1)
       .then((data) => {
         const track = data.items[0].track;
         console.log(`First track is "${track.name}"`);
@@ -88,7 +88,7 @@ function saveFirstOfPlaylist(sourcePlaylistId: string): Promise<void> {
       offset === undefined || offset < dataTotal;
 
     ) {
-      const data = await sdk.currentUser.playlists.playlists(undefined, offset );
+      const data = await sdk.currentUser.playlists.playlists(undefined, offset);
       for (const item of data.items) {
         if (item.description.includes(`Top of ${results[0]}`)) {
           console.log(`Found target playlist with name "${item.name}"`);
@@ -103,10 +103,16 @@ function saveFirstOfPlaylist(sourcePlaylistId: string): Promise<void> {
 
     if (!targetPlaylistId) {
       console.log("No target playlist found, creating one:");
-      const data = await sdk.playlists.createPlaylist((await sdk.currentUser.profile()).id,{name:`Top: ${results[0]}`,
-        description: `Top of ${results[0]} (Marker, don't remove)`,
-        public: false,
-      });
+      const data = await sdk.playlists.createPlaylist(
+        (
+          await sdk.currentUser.profile()
+        ).id,
+        {
+          name: `Top: ${results[0]}`,
+          description: `Top of ${results[0]} (Marker, don't remove)`,
+          public: false,
+        }
+      );
       console.log(`Created new private playlist with id ${data.id}`);
       targetPlaylistId = data.id;
     }
@@ -119,9 +125,9 @@ function saveFirstOfPlaylist(sourcePlaylistId: string): Promise<void> {
   });
 }
 
-(async ()=> {
+(async () => {
   for (const playlistId of config.sourcePlaylists) {
     console.log(`\nPlaylist ${playlistId}:`);
     await saveFirstOfPlaylist(playlistId);
   }
-})()
+})();

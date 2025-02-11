@@ -1,4 +1,5 @@
 import SpotifyWebApi = require("spotify-web-api-node");
+import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 import fs = require("fs");
 
 interface config {
@@ -15,6 +16,10 @@ const spotifyApi = new SpotifyWebApi({
   clientSecret: config.clientSecret,
   refreshToken: config.refreshToken,
 });
+const sdk = SpotifyApi.withClientCredentials(
+  config.clientId,
+  config.clientSecret
+);
 
 async function searchTrackInPlaylist(
   playlistId: string,
@@ -29,10 +34,14 @@ async function searchTrackInPlaylist(
     offset === undefined || offset < dataTotal;
 
   ) {
-    const data = await spotifyApi.getPlaylistTracks(playlistId, {
-      offset: offset,
-    });
-    for (const item of data.body.items) {
+    const data = await sdk.playlists.getPlaylistItems(
+      playlistId,
+      undefined,
+      undefined,
+      undefined,
+      offset
+    );
+    for (const item of data.items) {
       if (item.track.uri === trackUri) {
         console.log(`Found track "${item.track.name}"`);
         trackFound = true;
@@ -40,8 +49,8 @@ async function searchTrackInPlaylist(
       }
     }
 
-    offset = data.body.offset + data.body.limit;
-    dataTotal = data.body.total;
+    offset = data.offset + data.limit;
+    dataTotal = data.total;
   }
 
   if (!trackFound) {
@@ -55,7 +64,7 @@ function addTrackToPlaylist(playlistId: string, trackUri: string) {
   return searchTrackInPlaylist(playlistId, trackUri).then((isInPlaylist) => {
     if (!isInPlaylist) {
       console.log(`Adding track ${trackUri} to playlist ${playlistId}`);
-      return spotifyApi.addTracksToPlaylist(playlistId, [trackUri]);
+      return sdk.playlists.addItemsToPlaylist(playlistId, [trackUri]);
     } else {
       console.log(`Skip adding track ${trackUri}`);
     }
@@ -65,15 +74,15 @@ function addTrackToPlaylist(playlistId: string, trackUri: string) {
 function saveFirstOfPlaylist(sourcePlaylistId: string): Promise<void> {
   console.log("Getting playlist info & tracks:");
   return Promise.all([
-    spotifyApi.getPlaylist(sourcePlaylistId).then((data) => {
-      const name = data.body.name;
+    sdk.playlists.getPlaylist(sourcePlaylistId).then((data) => {
+      const name = data.name;
       console.log(`Source playlist name is "${name}"`);
       return name;
     }),
-    spotifyApi
-      .getPlaylistTracks(sourcePlaylistId, { limit: 1 })
+    sdk.playlists
+      .getPlaylistItems(sourcePlaylistId, undefined,undefined, 1 )
       .then((data) => {
-        const track = data.body.items[0].track;
+        const track = data.items[0].track;
         console.log(`First track is "${track.name}"`);
         return track.uri;
       }),
@@ -85,8 +94,8 @@ function saveFirstOfPlaylist(sourcePlaylistId: string): Promise<void> {
       offset === undefined || offset < dataTotal;
 
     ) {
-      const data = await spotifyApi.getUserPlaylists({ offset: offset });
-      for (const item of data.body.items) {
+      const data = await sdk.currentUser.playlists.playlists(undefined, offset );
+      for (const item of data.items) {
         if (item.description.includes(`Top of ${results[0]}`)) {
           console.log(`Found target playlist with name "${item.name}"`);
           targetPlaylistId = item.id;
@@ -94,18 +103,18 @@ function saveFirstOfPlaylist(sourcePlaylistId: string): Promise<void> {
         }
       }
 
-      offset = data.body.offset + data.body.limit;
-      dataTotal = data.body.total;
+      offset = data.offset + data.limit;
+      dataTotal = data.total;
     }
 
     if (!targetPlaylistId) {
       console.log("No target playlist found, creating one:");
-      const data = await spotifyApi.createPlaylist(`Top: ${results[0]}`, {
+      const data = await sdk.playlists.createPlaylist((await sdk.currentUser.profile()).id,{name:`Top: ${results[0]}`,
         description: `Top of ${results[0]} (Marker, don't remove)`,
         public: false,
       });
-      console.log(`Created new private playlist with id ${data.body.id}`);
-      targetPlaylistId = data.body.id;
+      console.log(`Created new private playlist with id ${data.id}`);
+      targetPlaylistId = data.id;
     }
 
     if (targetPlaylistId) {
@@ -116,13 +125,15 @@ function saveFirstOfPlaylist(sourcePlaylistId: string): Promise<void> {
   });
 }
 
-console.log("Refreshing token:");
-spotifyApi.refreshAccessToken().then(async (data) => {
-  spotifyApi.setAccessToken(data.body["access_token"]);
-  console.log("Got access token");
+// console.log("Refreshing token:");
+// spotifyApi.refreshAccessToken().then(async (data) => {
+//   spotifyApi.setAccessToken(data.body["access_token"]);
+//   console.log("Got access token");
 
+(async ()=> {
   for (const playlistId of config.sourcePlaylists) {
     console.log(`\nPlaylist ${playlistId}:`);
     await saveFirstOfPlaylist(playlistId);
   }
-});
+})()
+// });

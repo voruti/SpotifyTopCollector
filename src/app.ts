@@ -1,4 +1,3 @@
-import SpotifyWebApi = require("spotify-web-api-node");
 import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 import fs = require("fs");
 
@@ -11,11 +10,6 @@ interface config {
 
 const config = JSON.parse(fs.readFileSync("./config.json", "utf8")) as config;
 
-const spotifyApi = new SpotifyWebApi({
-  clientId: config.clientId,
-  clientSecret: config.clientSecret,
-  refreshToken: config.refreshToken,
-});
 const sdk = SpotifyApi.withClientCredentials(
   config.clientId,
   config.clientSecret
@@ -125,15 +119,9 @@ function saveFirstOfPlaylist(sourcePlaylistId: string): Promise<void> {
   });
 }
 
-// console.log("Refreshing token:");
-// spotifyApi.refreshAccessToken().then(async (data) => {
-//   spotifyApi.setAccessToken(data.body["access_token"]);
-//   console.log("Got access token");
-
 (async ()=> {
   for (const playlistId of config.sourcePlaylists) {
     console.log(`\nPlaylist ${playlistId}:`);
     await saveFirstOfPlaylist(playlistId);
   }
 })()
-// });
